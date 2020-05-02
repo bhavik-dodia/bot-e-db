@@ -3,7 +3,6 @@ import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -17,7 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<String> _data = ["Hi, How can I help you? <bot>"];
-  static const String BOT_URL = "https://bot-e-db.herokuapp.com/bot";
+  static const String BOT_URL = "https://bot-e-db.herokuapp.com/bot"; // your chatbot url
   TextEditingController _queryController = TextEditingController();
 
   @override
@@ -84,6 +83,7 @@ class _HomePageState extends State<HomePage> {
                     prefixIcon: Icon(
                       Icons.message,
                     ),
+                    
                     hintText: "Say something...",
                   ),
                   controller: _queryController,
@@ -163,7 +163,7 @@ class _HomePageState extends State<HomePage> {
                   radius: Radius.circular(15),
                   child: Text(
                     item.replaceAll("<bot>", ""),
-                    style: TextStyle(fontSize: 17),
+                    style: TextStyle(fontSize: 17, color: Colors.white),
                   ),
                   color: Colors.blue,
                   padding: BubbleEdges.all(10),
