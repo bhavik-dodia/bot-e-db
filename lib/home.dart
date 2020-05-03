@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
@@ -16,8 +18,23 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<String> _data = ["Hi, How can I help you? <bot>"];
-  static const String BOT_URL = "https://bot-e-db.herokuapp.com/bot"; // your chatbot url
+  static const String BOT_URL =
+      "https://bot-e-db.herokuapp.com/bot"; // your chatbot url
   TextEditingController _queryController = TextEditingController();
+  ScrollController _sc = ScrollController();
+  FocusNode inputFieldNode;
+
+  @override
+  void initState() {
+    super.initState();
+    inputFieldNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    inputFieldNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +67,10 @@ class _HomePageState extends State<HomePage> {
       body: Stack(
         children: <Widget>[
           AnimatedList(
-              // key to call remove and insert from aanywhere
+              // key to call remove and insert from anywhere
               key: _listKey,
               padding: EdgeInsets.only(top: 110, bottom: 60),
+              controller: _sc,
               initialItemCount: _data.length,
               itemBuilder:
                   (BuildContext context, int index, Animation animation) {
@@ -83,14 +101,17 @@ class _HomePageState extends State<HomePage> {
                     prefixIcon: Icon(
                       Icons.message,
                     ),
-                    
                     hintText: "Say something...",
                   ),
                   controller: _queryController,
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.send,
+                  focusNode: inputFieldNode,
                   onSubmitted: (msg) {
+                    Timer(Duration(milliseconds: 400), () => _sc.animateTo(_sc.position.maxScrollExtent,duration: Duration(milliseconds: 500), curve: Curves.linear)); // to automatically scrolldown after sending request
                     this._getResponse();
+                    FocusScope.of(context).requestFocus(inputFieldNode); // to keep keyboard open
+                    Timer(Duration(seconds: 2), () => _sc.animateTo(_sc.position.maxScrollExtent,duration: Duration(milliseconds: 500), curve: Curves.linear)); // to automatically scrolldown after receiving response
                   },
                 ),
               ),

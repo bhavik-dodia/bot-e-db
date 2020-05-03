@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         themedWidgetBuilder: (context, theme) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Chatbot',
+            title: 'Bot-E-DB',
             theme: theme,
             home: HomePage(),
             routes: <String, WidgetBuilder>{
