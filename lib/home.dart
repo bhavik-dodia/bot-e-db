@@ -165,9 +165,9 @@ class _HomePageState extends State<HomePage> {
                 child: Bubble(
                   elevation: 8,
                   // nip: BubbleNip.leftTop,
-                  margin: BubbleEdges.only(left: 8, right: 8),
+                  margin: BubbleEdges.only(left: 8, right: 30),
                   radius: Radius.circular(15),
-                  child: Text(
+                  child: SelectableText(
                     item.replaceAll("<bot>", ""),
                     style: TextStyle(fontSize: 17),
                   ),
@@ -180,9 +180,9 @@ class _HomePageState extends State<HomePage> {
                 child: Bubble(
                   elevation: 8,
                   // nip: BubbleNip.rightTop,
-                  margin: BubbleEdges.only(left: 8, right: 8),
+                  margin: BubbleEdges.only(left: 30, right: 8),
                   radius: Radius.circular(15),
-                  child: Text(
+                  child: SelectableText(
                     item.replaceAll("<bot>", ""),
                     style: TextStyle(fontSize: 17, color: Colors.white),
                   ),
