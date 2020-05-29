@@ -21,8 +21,8 @@ class MyApp extends StatelessWidget {
             theme: theme,
             home: HomePage(),
             routes: <String, WidgetBuilder>{
-        '/homepage': (BuildContext context) => HomePage(),
-      },
+              '/homepage': (BuildContext context) => HomePage(),
+            },
           );
         });
   }

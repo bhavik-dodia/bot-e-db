@@ -108,10 +108,21 @@ class _HomePageState extends State<HomePage> {
                   textInputAction: TextInputAction.send,
                   focusNode: inputFieldNode,
                   onSubmitted: (msg) {
-                    Timer(Duration(milliseconds: 400), () => _sc.animateTo(_sc.position.maxScrollExtent,duration: Duration(milliseconds: 500), curve: Curves.linear)); // to automatically scrolldown after sending request
+                    // to automatically scrolldown after sending request
+                    Timer(
+                        Duration(milliseconds: 400),
+                        () => _sc.animateTo(_sc.position.maxScrollExtent,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.linear));
                     this._getResponse();
-                    FocusScope.of(context).requestFocus(inputFieldNode); // to keep keyboard open
-                    Timer(Duration(seconds: 2), () => _sc.animateTo(_sc.position.maxScrollExtent,duration: Duration(milliseconds: 500), curve: Curves.linear)); // to automatically scrolldown after receiving response
+                    FocusScope.of(context)
+                        .requestFocus(inputFieldNode); // to keep keyboard open
+                    // to automatically scrolldown after receiving response
+                    Timer(
+                        Duration(seconds: 2),
+                        () => _sc.animateTo(_sc.position.maxScrollExtent,
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.linear));
                   },
                 ),
               ),
