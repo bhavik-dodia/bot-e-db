@@ -26,7 +26,6 @@ class _HomePageState extends State<HomePage> {
   TextEditingController _queryController = TextEditingController();
   ScrollController _sc = ScrollController();
   FocusNode inputFieldNode;
-  String message;
 
   @override
   void initState() {
@@ -110,30 +109,23 @@ class _HomePageState extends State<HomePage> {
                   textInputAction: TextInputAction.send,
                   focusNode: inputFieldNode,
                   onSubmitted: (msg) {
-                    // to automatically scrolldown after sending request
-                    if (_queryController.text.length > 0) {
-                      message = msg;
-                      print(message);
+                    if (msg.length > 0) {
+                      print(msg);
                       setState(() {
-                        _data.add([true, message]);
+                        _data.add([true, msg]);
                         _data.add([false, '<bot>']);
                       });
                       _queryController.clear();
-                      _getResponse(_data.length - 1);
+                      _getResponse(_data.length - 1, msg);
+                      // to automatically scrolldown after sending request
                       Timer(
                           Duration(milliseconds: 200),
                           () => _sc.animateTo(_sc.position.maxScrollExtent,
                               duration: Duration(milliseconds: 500),
                               curve: Curves.easeOut));
                       FocusScope.of(context).requestFocus(
-                          inputFieldNode); // to keep keyboard open
+                          inputFieldNode); // to keep the keyboard open
                     }
-                    // to automatically scrolldown after receiving response
-                    // Timer(
-                    //     Duration(seconds: 2),
-                    //     () => _sc.animateTo(_sc.position.maxScrollExtent,
-                    //         duration: Duration(milliseconds: 500),
-                    //         curve: Curves.linear));
                   },
                 ),
               ),
@@ -157,12 +149,12 @@ class _HomePageState extends State<HomePage> {
   //   return _data[index];
   // }
 
-  void _getResponse(int index) {
+  void _getResponse(int index, String msg) {
     var client = http.Client();
     try {
       client.post(
         BOT_URL,
-        body: {"query": message},
+        body: {"query": msg},
       )..then((response) {
           print(response.body);
           Map<String, dynamic> data = jsonDecode(response.body);
@@ -195,21 +187,21 @@ class _HomePageState extends State<HomePage> {
                 margin: BubbleEdges.only(left: 8, right: 30),
                 radius: Radius.circular(15),
                 child: item[0]
-                        ? SelectableText(
-                            item[1].replaceAll("<bot>", ""),
-                            style: TextStyle(fontSize: 17),
-                          )
-                        : CollectionScaleTransition(children: [
-                            Text('●', style: TextStyle(fontSize: 17)),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text('●', style: TextStyle(fontSize: 17)),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text('●', style: TextStyle(fontSize: 17))
-                          ]),
+                    ? SelectableText(
+                        item[1].replaceAll("<bot>", ""),
+                        style: TextStyle(fontSize: 17),
+                      )
+                    : CollectionScaleTransition(children: [
+                        Text('●', style: TextStyle(fontSize: 17)),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text('●', style: TextStyle(fontSize: 17)),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text('●', style: TextStyle(fontSize: 17))
+                      ]),
                 // : FutureBuilder(
                 //     future: _getResponse(index),
                 //     builder: (context, snapshot) {
