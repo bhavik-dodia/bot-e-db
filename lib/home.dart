@@ -194,12 +194,7 @@ class _HomePageState extends State<HomePage> {
                 // nip: BubbleNip.leftTop,
                 margin: BubbleEdges.only(left: 8, right: 30),
                 radius: Radius.circular(15),
-                child: index == 0
-                    ? SelectableText(
-                        item[1].replaceAll("<bot>", ""),
-                        style: TextStyle(fontSize: 17),
-                      )
-                    : item[0]
+                child: item[0]
                         ? SelectableText(
                             item[1].replaceAll("<bot>", ""),
                             style: TextStyle(fontSize: 17),
