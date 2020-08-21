@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:progress_indicators/progress_indicators.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -16,13 +17,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
-  List<String> _data = ["Hi, How can I help you? <bot>"];
+  // final GlobalKey<AnimatedListState> _listKey = GlobalKey();
+  List<dynamic> _data = [
+    [true, "Hi, How can I help you?<bot>"]
+  ];
   static const String BOT_URL =
       "https://bot-e-db.herokuapp.com/bot"; // your chatbot url
   TextEditingController _queryController = TextEditingController();
   ScrollController _sc = ScrollController();
   FocusNode inputFieldNode;
+  String message;
 
   @override
   void initState() {
@@ -66,16 +70,14 @@ class _HomePageState extends State<HomePage> {
       extendBodyBehindAppBar: true,
       body: Stack(
         children: <Widget>[
-          AnimatedList(
-              // key to call remove and insert from anywhere
-              key: _listKey,
-              padding: EdgeInsets.only(top: 110, bottom: 60),
-              controller: _sc,
-              initialItemCount: _data.length,
-              itemBuilder:
-                  (BuildContext context, int index, Animation animation) {
-                return _buildItem(_data[index], animation, index);
-              }),
+          ListView.builder(
+            padding: EdgeInsets.only(top: 110, bottom: 60),
+            itemBuilder: (BuildContext context, int index) =>
+                _buildItem(_data[index], index),
+            itemCount: _data.length,
+            controller: _sc,
+            reverse: false,
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Card(
@@ -109,20 +111,29 @@ class _HomePageState extends State<HomePage> {
                   focusNode: inputFieldNode,
                   onSubmitted: (msg) {
                     // to automatically scrolldown after sending request
-                    Timer(
-                        Duration(milliseconds: 400),
-                        () => _sc.animateTo(_sc.position.maxScrollExtent,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.linear));
-                    this._getResponse();
-                    FocusScope.of(context)
-                        .requestFocus(inputFieldNode); // to keep keyboard open
+                    if (_queryController.text.length > 0) {
+                      message = msg;
+                      print(message);
+                      setState(() {
+                        _data.add([true, message]);
+                        _data.add([false, '<bot>']);
+                      });
+                      _queryController.clear();
+                      _getResponse(_data.length - 1);
+                      Timer(
+                          Duration(milliseconds: 200),
+                          () => _sc.animateTo(_sc.position.maxScrollExtent,
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeOut));
+                      FocusScope.of(context).requestFocus(
+                          inputFieldNode); // to keep keyboard open
+                    }
                     // to automatically scrolldown after receiving response
-                    Timer(
-                        Duration(seconds: 2),
-                        () => _sc.animateTo(_sc.position.maxScrollExtent,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.linear));
+                    // Timer(
+                    //     Duration(seconds: 2),
+                    //     () => _sc.animateTo(_sc.position.maxScrollExtent,
+                    //         duration: Duration(milliseconds: 500),
+                    //         curve: Curves.linear));
                   },
                 ),
               ),
@@ -133,75 +144,107 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  http.Client _getClient() {
-    return http.Client();
-  }
+  // Future<String> _getResponse(int index) async {
+  //   var client = http.Client();
+  //   final response = await client.post(
+  //     BOT_URL,
+  //     body: {"query": message},
+  //   );
+  //   print(response.body);
+  //   Map<String, dynamic> data = jsonDecode(response.body);
+  //   client.close();
+  //   _data[index]=data['response'] + "<bot>";
+  //   return _data[index];
+  // }
 
-  void _getResponse() {
-    if (_queryController.text.length > 0) {
-      this._insertSingleItem(_queryController.text);
-      var client = _getClient();
-      try {
-        client.post(
-          BOT_URL,
-          body: {"query": _queryController.text},
-        )..then((response) {
-            print(response.body);
-            Map<String, dynamic> data = jsonDecode(response.body);
-            _insertSingleItem(data['response'] + "<bot>");
+  void _getResponse(int index) {
+    var client = http.Client();
+    try {
+      client.post(
+        BOT_URL,
+        body: {"query": message},
+      )..then((response) {
+          print(response.body);
+          Map<String, dynamic> data = jsonDecode(response.body);
+          setState(() {
+            _data[index] = [true, data['response'] + "<bot>"];
           });
-      } catch (e) {
-        print("Failed -> $e");
-      } finally {
-        client.close();
-        _queryController.clear();
-      }
+          Timer(
+              Duration(milliseconds: 100),
+              () => _sc.animateTo(_sc.position.maxScrollExtent,
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.easeOut));
+        });
+    } catch (e) {
+      print(e);
+    } finally {
+      client.close();
     }
   }
 
-  void _insertSingleItem(String message) {
-    _data.add(message);
-    _listKey.currentState.insertItem(_data.length - 1);
-  }
-
-  Widget _buildItem(String item, Animation animation, int index) {
-    bool mine = item.endsWith("<bot>");
-    return SizeTransition(
-      sizeFactor: animation,
-      child: Padding(
-        padding: EdgeInsets.only(bottom: 20),
-        child: mine
-            ? Container(
-                alignment: Alignment.topLeft,
-                child: Bubble(
-                  elevation: 8,
-                  // nip: BubbleNip.leftTop,
-                  margin: BubbleEdges.only(left: 8, right: 30),
-                  radius: Radius.circular(15),
-                  child: SelectableText(
-                    item.replaceAll("<bot>", ""),
-                    style: TextStyle(fontSize: 17),
-                  ),
-                  color: Colors.black26,
-                  padding: BubbleEdges.all(10),
-                ),
-              )
-            : Container(
-                alignment: Alignment.topRight,
-                child: Bubble(
-                  elevation: 8,
-                  // nip: BubbleNip.rightTop,
-                  margin: BubbleEdges.only(left: 30, right: 8),
-                  radius: Radius.circular(15),
-                  child: SelectableText(
-                    item.replaceAll("<bot>", ""),
-                    style: TextStyle(fontSize: 17, color: Colors.white),
-                  ),
-                  color: Colors.blue,
-                  padding: BubbleEdges.all(10),
-                ),
+  Widget _buildItem(dynamic item, int index) {
+    bool bot = item[1].endsWith("<bot>");
+    return Padding(
+      padding: EdgeInsets.only(bottom: 20),
+      child: bot
+          ? Container(
+              alignment: Alignment.topLeft,
+              child: Bubble(
+                elevation: 8,
+                // nip: BubbleNip.leftTop,
+                margin: BubbleEdges.only(left: 8, right: 30),
+                radius: Radius.circular(15),
+                child: index == 0
+                    ? SelectableText(
+                        item[1].replaceAll("<bot>", ""),
+                        style: TextStyle(fontSize: 17),
+                      )
+                    : item[0]
+                        ? SelectableText(
+                            item[1].replaceAll("<bot>", ""),
+                            style: TextStyle(fontSize: 17),
+                          )
+                        : CollectionScaleTransition(children: [
+                            Text('●', style: TextStyle(fontSize: 17)),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text('●', style: TextStyle(fontSize: 17)),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text('●', style: TextStyle(fontSize: 17))
+                          ]),
+                // : FutureBuilder(
+                //     future: _getResponse(index),
+                //     builder: (context, snapshot) {
+                //       if (!snapshot.hasData)
+                //         return CollectionScaleTransition(children: [Text('●',style: TextStyle(fontSize: 17)),SizedBox(width: 5,),Text('●',style: TextStyle(fontSize: 17)),SizedBox(width: 5,),Text('●',style: TextStyle(fontSize: 17))]);
+                //       else
+                //         return SelectableText(
+                //           snapshot.data.replaceAll("<bot>", ""),
+                //           style: TextStyle(fontSize: 17),
+                //         );
+                //     }),
+                color: Colors.black26,
+                padding: BubbleEdges.all(10),
               ),
-      ),
+            )
+          : Container(
+              alignment: Alignment.topRight,
+              child: Bubble(
+                elevation: 8,
+                // nip: BubbleNip.rightTop,
+                margin: BubbleEdges.only(left: 30, right: 8),
+                radius: Radius.circular(15),
+                child: SelectableText(
+                  item[1],
+                  style: TextStyle(fontSize: 17, color: Colors.white),
+                ),
+                color: Colors.blue,
+                padding: BubbleEdges.all(10),
+              ),
+            ),
     );
   }
 }
