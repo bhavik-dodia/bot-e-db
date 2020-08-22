@@ -4,6 +4,7 @@ import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:progress_indicators/progress_indicators.dart';
 
@@ -17,7 +18,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<dynamic> _data = [
     [true, "Hi, How can I help you?<bot>"]
   ];
@@ -47,7 +47,11 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         elevation: 8,
         leading: Icon(Icons.home),
-        title: Text('Chatbot'),
+        title: Text(
+          'Chatbot',
+          style:
+              GoogleFonts.courgette(fontSize: 25, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         actions: <Widget>[
           IconButton(
@@ -80,6 +84,7 @@ class _HomePageState extends State<HomePage> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Card(
+              clipBehavior: Clip.antiAlias,
               elevation: 8,
               margin: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
@@ -89,10 +94,12 @@ class _HomePageState extends State<HomePage> {
               ),
               child: Container(
                 height: 60,
+                padding: EdgeInsets.symmetric(horizontal: 8),
                 alignment: Alignment.center,
                 child: TextField(
                   autofocus: true,
-                  style: TextStyle(fontSize: 18),
+                  style: GoogleFonts.merienda(
+                          fontSize: 16, color: Colors.white),
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
@@ -101,32 +108,23 @@ class _HomePageState extends State<HomePage> {
                     disabledBorder: InputBorder.none,
                     prefixIcon: Icon(
                       Icons.message,
+                      size: 28,
+                      color: Colors.blueAccent,
                     ),
+                    suffixIcon: IconButton(
+                        icon: Icon(
+                          Icons.send,
+                          size: 28,
+                          color: Colors.blueAccent,
+                        ),
+                        onPressed: _insert),
                     hintText: "Say something...",
                   ),
                   controller: _queryController,
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.send,
                   focusNode: inputFieldNode,
-                  onSubmitted: (msg) {
-                    if (msg.length > 0) {
-                      print(msg);
-                      setState(() {
-                        _data.add([true, msg]);
-                        _data.add([false, '<bot>']);
-                      });
-                      _queryController.clear();
-                      _getResponse(_data.length - 1, msg);
-                      // to automatically scrolldown after sending request
-                      Timer(
-                          Duration(milliseconds: 200),
-                          () => _sc.animateTo(_sc.position.maxScrollExtent,
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.easeOut));
-                      FocusScope.of(context).requestFocus(
-                          inputFieldNode); // to keep the keyboard open
-                    }
-                  },
+                  onSubmitted: (msg) => _insert(),
                 ),
               ),
             ),
@@ -136,18 +134,25 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Future<String> _getResponse(int index) async {
-  //   var client = http.Client();
-  //   final response = await client.post(
-  //     BOT_URL,
-  //     body: {"query": message},
-  //   );
-  //   print(response.body);
-  //   Map<String, dynamic> data = jsonDecode(response.body);
-  //   client.close();
-  //   _data[index]=data['response'] + "<bot>";
-  //   return _data[index];
-  // }
+  void _insert() {
+    String msg = _queryController.text;
+    if (msg.length > 0) {
+      print(msg);
+      setState(() {
+        _data.add([true, msg]);
+        _data.add([false, '<bot>']);
+      });
+      _queryController.clear();
+      _getResponse(_data.length - 1, msg);
+      // to automatically scrolldown after sending request
+      Timer(
+          Duration(milliseconds: 200),
+          () => _sc.animateTo(_sc.position.maxScrollExtent,
+              duration: Duration(milliseconds: 500), curve: Curves.easeOut));
+      FocusScope.of(context)
+          .requestFocus(inputFieldNode); // to keep the keyboard open
+    }
+  }
 
   void _getResponse(int index, String msg) {
     var client = http.Client();
@@ -179,58 +184,51 @@ class _HomePageState extends State<HomePage> {
     return Padding(
       padding: EdgeInsets.only(bottom: 20),
       child: bot
-          ? Container(
+          ? Bubble(
+              elevation: 8,
+              // nip: BubbleNip.leftTop,
               alignment: Alignment.topLeft,
-              child: Bubble(
-                elevation: 8,
-                // nip: BubbleNip.leftTop,
-                margin: BubbleEdges.only(left: 8, right: 30),
-                radius: Radius.circular(15),
-                child: item[0]
-                    ? SelectableText(
-                        item[1].replaceAll("<bot>", ""),
-                        style: TextStyle(fontSize: 17),
-                      )
-                    : CollectionScaleTransition(children: [
-                        Text('●', style: TextStyle(fontSize: 17)),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text('●', style: TextStyle(fontSize: 17)),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text('●', style: TextStyle(fontSize: 17))
-                      ]),
-                // : FutureBuilder(
-                //     future: _getResponse(index),
-                //     builder: (context, snapshot) {
-                //       if (!snapshot.hasData)
-                //         return CollectionScaleTransition(children: [Text('●',style: TextStyle(fontSize: 17)),SizedBox(width: 5,),Text('●',style: TextStyle(fontSize: 17)),SizedBox(width: 5,),Text('●',style: TextStyle(fontSize: 17))]);
-                //       else
-                //         return SelectableText(
-                //           snapshot.data.replaceAll("<bot>", ""),
-                //           style: TextStyle(fontSize: 17),
-                //         );
-                //     }),
-                color: Colors.black26,
-                padding: BubbleEdges.all(10),
-              ),
+              margin: BubbleEdges.only(left: 8, right: 30),
+              radius: Radius.circular(15),
+              child: item[0]
+                  ? SelectableText(
+                      item[1].replaceAll("<bot>", ""),
+                      style: GoogleFonts.merienda(
+                          fontSize: 16, color: Colors.white),
+                    )
+                  : CollectionScaleTransition(children: [
+                      Text('●',
+                          style: GoogleFonts.merienda(
+                          fontSize: 16, color: Colors.white),),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text('●',
+                          style: GoogleFonts.merienda(
+                          fontSize: 16, color: Colors.white),),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text('●',
+                          style: GoogleFonts.merienda(
+                          fontSize: 16, color: Colors.white),)
+                    ]),
+              color: Colors.deepPurple,
+              padding: BubbleEdges.all(10),
             )
-          : Container(
+          : Bubble(
+              elevation: 8,
+              // nip: BubbleNip.rightTop,
               alignment: Alignment.topRight,
-              child: Bubble(
-                elevation: 8,
-                // nip: BubbleNip.rightTop,
-                margin: BubbleEdges.only(left: 30, right: 8),
-                radius: Radius.circular(15),
-                child: SelectableText(
-                  item[1],
-                  style: TextStyle(fontSize: 17, color: Colors.white),
-                ),
-                color: Colors.blue,
-                padding: BubbleEdges.all(10),
+              margin: BubbleEdges.only(left: 30, right: 8),
+              radius: Radius.circular(15),
+              child: SelectableText(
+                item[1],
+                style: GoogleFonts.merienda(
+                          fontSize: 16, color: Colors.white),
               ),
+              color: Colors.lightBlue,
+              padding: BubbleEdges.all(10),
             ),
     );
   }
