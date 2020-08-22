@@ -98,8 +98,7 @@ class _HomePageState extends State<HomePage> {
                 alignment: Alignment.center,
                 child: TextField(
                   autofocus: true,
-                  style: GoogleFonts.merienda(
-                          fontSize: 16, color: Colors.white),
+                  style: GoogleFonts.merienda(fontSize: 16),
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
@@ -197,21 +196,27 @@ class _HomePageState extends State<HomePage> {
                           fontSize: 16, color: Colors.white),
                     )
                   : CollectionScaleTransition(children: [
-                      Text('●',
-                          style: GoogleFonts.merienda(
-                          fontSize: 16, color: Colors.white),),
+                      Text(
+                        '●',
+                        style: GoogleFonts.merienda(
+                            fontSize: 16, color: Colors.white),
+                      ),
                       SizedBox(
                         width: 5,
                       ),
-                      Text('●',
-                          style: GoogleFonts.merienda(
-                          fontSize: 16, color: Colors.white),),
+                      Text(
+                        '●',
+                        style: GoogleFonts.merienda(
+                            fontSize: 16, color: Colors.white),
+                      ),
                       SizedBox(
                         width: 5,
                       ),
-                      Text('●',
-                          style: GoogleFonts.merienda(
-                          fontSize: 16, color: Colors.white),)
+                      Text(
+                        '●',
+                        style: GoogleFonts.merienda(
+                            fontSize: 16, color: Colors.white),
+                      )
                     ]),
               color: Colors.deepPurple,
               padding: BubbleEdges.all(10),
@@ -224,8 +229,7 @@ class _HomePageState extends State<HomePage> {
               radius: Radius.circular(15),
               child: SelectableText(
                 item[1],
-                style: GoogleFonts.merienda(
-                          fontSize: 16, color: Colors.white),
+                style: GoogleFonts.merienda(fontSize: 16, color: Colors.white),
               ),
               color: Colors.lightBlue,
               padding: BubbleEdges.all(10),
