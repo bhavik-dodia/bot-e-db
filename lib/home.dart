@@ -49,25 +49,27 @@ class _HomePageState extends State<HomePage> {
         leading: Icon(Icons.home),
         title: Text(
           'Chatbot',
-          style:
-              GoogleFonts.courgette(fontSize: 25, fontWeight: FontWeight.bold),
+          style: GoogleFonts.courgette(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         actions: <Widget>[
           IconButton(
-              tooltip: 'Change Theme',
-              icon: Icon(Icons.brightness_medium),
-              onPressed: () {
-                DynamicTheme.of(context).setBrightness(
-                    Theme.of(context).brightness == Brightness.dark
-                        ? Brightness.light
-                        : Brightness.dark);
-              }),
+            tooltip: 'Change Theme',
+            icon: Icon(Icons.brightness_medium),
+            onPressed: () {
+              DynamicTheme.of(context).setBrightness(
+                Theme.of(context).brightness == Brightness.dark
+                    ? Brightness.light
+                    : Brightness.dark,
+              );
+            },
+          ),
         ],
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(30),
-          ),
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
         ),
       ),
       extendBodyBehindAppBar: true,
@@ -89,8 +91,9 @@ class _HomePageState extends State<HomePage> {
               margin: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30)),
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
               ),
               child: Container(
                 height: 60,
@@ -111,12 +114,13 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.blueAccent,
                     ),
                     suffixIcon: IconButton(
-                        icon: Icon(
-                          Icons.send,
-                          size: 28,
-                          color: Colors.blueAccent,
-                        ),
-                        onPressed: _insert),
+                      icon: Icon(
+                        Icons.send,
+                        size: 28,
+                        color: Colors.blueAccent,
+                      ),
+                      onPressed: _insert,
+                    ),
                     hintText: "Say something...",
                   ),
                   controller: _queryController,
@@ -145,9 +149,13 @@ class _HomePageState extends State<HomePage> {
       _getResponse(_data.length - 1, msg);
       // to automatically scrolldown after sending request
       Timer(
-          Duration(milliseconds: 200),
-          () => _sc.animateTo(_sc.position.maxScrollExtent,
-              duration: Duration(milliseconds: 500), curve: Curves.easeOut));
+        Duration(milliseconds: 200),
+        () => _sc.animateTo(
+          _sc.position.maxScrollExtent,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeOut,
+        ),
+      );
       FocusScope.of(context)
           .requestFocus(inputFieldNode); // to keep the keyboard open
     }
@@ -166,10 +174,13 @@ class _HomePageState extends State<HomePage> {
             _data[index] = [true, data['response'] + "<bot>"];
           });
           Timer(
-              Duration(milliseconds: 100),
-              () => _sc.animateTo(_sc.position.maxScrollExtent,
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.easeOut));
+            Duration(milliseconds: 100),
+            () => _sc.animateTo(
+              _sc.position.maxScrollExtent,
+              duration: Duration(milliseconds: 500),
+              curve: Curves.easeOut,
+            ),
+          );
         });
     } catch (e) {
       print(e);
@@ -193,31 +204,41 @@ class _HomePageState extends State<HomePage> {
                   ? SelectableText(
                       item[1].replaceAll("<bot>", ""),
                       style: GoogleFonts.merienda(
-                          fontSize: 16, color: Colors.white),
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
                     )
-                  : CollectionScaleTransition(children: [
-                      Text(
-                        '●',
-                        style: GoogleFonts.merienda(
-                            fontSize: 16, color: Colors.white),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        '●',
-                        style: GoogleFonts.merienda(
-                            fontSize: 16, color: Colors.white),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        '●',
-                        style: GoogleFonts.merienda(
-                            fontSize: 16, color: Colors.white),
-                      )
-                    ]),
+                  : CollectionScaleTransition(
+                      children: [
+                        Text(
+                          '●',
+                          style: GoogleFonts.merienda(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          '●',
+                          style: GoogleFonts.merienda(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          '●',
+                          style: GoogleFonts.merienda(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        )
+                      ],
+                    ),
               color: Colors.deepPurple,
               padding: BubbleEdges.all(10),
             )

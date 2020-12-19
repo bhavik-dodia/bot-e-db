@@ -8,22 +8,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DynamicTheme(
-        defaultBrightness: Brightness.dark,
-        data: (brightness) => new ThemeData(
-              primaryColor: Colors.blue,
-              accentColor: Colors.blueAccent,
-              brightness: brightness,
-            ),
-        themedWidgetBuilder: (context, theme) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'Bot-E-DB',
-            theme: theme,
-            home: HomePage(),
-            routes: <String, WidgetBuilder>{
-              '/homepage': (BuildContext context) => HomePage(),
-            },
-          );
-        });
+      defaultBrightness: Brightness.dark,
+      data: (brightness) => new ThemeData(
+        primaryColor: Colors.blue,
+        accentColor: Colors.blueAccent,
+        brightness: brightness,
+      ),
+      themedWidgetBuilder: (context, theme) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Bot-E-DB',
+          theme: theme,
+          home: HomePage(),
+          routes: <String, WidgetBuilder>{
+            '/homepage': (BuildContext context) => HomePage(),
+          },
+        );
+      },
+    );
   }
 }
